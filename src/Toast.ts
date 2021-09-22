@@ -5,7 +5,7 @@
  * Time: 下午5:18
  * Desc:
  */
-import Toast from 'react-native-root-toast';
+import Toast from "react-native-root-toast-updated";
 
 let toast = null;
 
@@ -22,15 +22,15 @@ export default {
       containerStyle: {
         height: 70,
         width: 70,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.7)'
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0,0,0,0.7)",
       },
       textStyle: {
-        color: 'white',
+        color: "white",
         fontSize: 35,
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     });
-  }
-}
+  },
+};

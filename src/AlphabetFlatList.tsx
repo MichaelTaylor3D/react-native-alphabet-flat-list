@@ -5,8 +5,8 @@
  * Time: 下午6:43
  * Desc:
  */
-import * as React from 'react'
-import { Component } from 'react';
+import * as React from "react";
+import { Component } from "react";
 import {
   Dimensions,
   FlatList,
@@ -14,9 +14,12 @@ import {
   LayoutChangeEvent,
   ListRenderItemInfo,
   View,
-  ViewToken
+  ViewToken,
 } from "react-native";
-import SectionHeader, {IProps as SectionHeaderIProps, sectionHeaderHeight} from './SectionHeader';
+import SectionHeader, {
+  IProps as SectionHeaderIProps,
+  sectionHeaderHeight,
+} from "./SectionHeader";
 import styles from "./styles";
 import AlphabetListView from "./AlphabetListView";
 
@@ -26,12 +29,16 @@ export interface IItemProps<I> {
   last: boolean;
 }
 
-export type ListRenderItem<ItemT> = (props: IItemProps<ItemT>) => React.ReactElement | null;
-export type ListRenderSectionHeader<T> = (props: T) => React.ReactElement | null;
+export type ListRenderItem<ItemT> = (
+  props: IItemProps<ItemT>
+) => React.ReactElement | null;
+export type ListRenderSectionHeader<T> = (
+  props: T
+) => React.ReactElement | null;
 
 export interface IProps<ItemT> {
   data: {
-    [key: string]: ItemT[]
+    [key: string]: ItemT[];
   };
   itemHeight: number;
   renderItem: ListRenderItem<ItemT>;
@@ -46,7 +53,7 @@ const defaultProps = {
   headerHeight: 0,
   sectionHeaderHeight: sectionHeaderHeight,
   renderSectionHeader: SectionHeader,
-  alphabetToast: true
+  alphabetToast: true,
 };
 
 export interface IState {
@@ -64,9 +71,12 @@ export interface IState {
   pageY: number; // 相对于屏幕的Y坐标
 }
 
-const windowHeight = Dimensions.get('window').height;
+const windowHeight = Dimensions.get("window").height;
 
-export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IState> {
+export default class AlphabetFlatList<ItemT> extends Component<
+  IProps<ItemT>,
+  IState
+> {
   static defaultProps = defaultProps;
 
   /**
@@ -84,10 +94,10 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
       containerHeight: windowHeight,
       itemLayout: [],
       titles: [],
-      selectAlphabet: '',
+      selectAlphabet: "",
       initialNumToRender: 0,
-      pageY: 0
-    }
+      pageY: 0,
+    };
   }
 
   componentDidMount() {
@@ -107,7 +117,9 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
   refreshBaseData = (data: any) => {
     const titles = Object.keys(data);
 
-    const offset = (index: number, itemLength: number) => index * this.props.sectionHeaderHeight! + itemLength * this.props.itemHeight;
+    const offset = (index: number, itemLength: number) =>
+      index * this.props.sectionHeaderHeight! +
+      itemLength * this.props.itemHeight;
 
     const itemLayout = titles.map((title, index) => {
       const beforeItemLength = titles
@@ -120,13 +132,13 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
         beforeItemLength,
         length:
           this.props.sectionHeaderHeight! + this.props.itemHeight * itemLength,
-        offset: offset(index, beforeItemLength) + this.props.headerHeight!
+        offset: offset(index, beforeItemLength) + this.props.headerHeight!,
       };
     });
 
     // 计算首屏渲染的数量 避免出现空白区域
     let initialNumToRender = itemLayout.findIndex(
-      item => item.offset >= this.state.containerHeight
+      (item) => item.offset >= this.state.containerHeight
     );
     if (initialNumToRender < 0) {
       initialNumToRender = titles.length;
@@ -136,7 +148,7 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
       itemLayout,
       titles,
       selectAlphabet: titles[0],
-      initialNumToRender
+      initialNumToRender,
     });
   };
 
@@ -150,16 +162,16 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
         if (this.container) {
           this.container.measure((x, y, w, h, px, py) => {
             this.setState({
-              pageY: py
+              pageY: py,
             });
           });
         }
       });
       this.setState({
-        containerHeight: e.nativeEvent.layout.height - this.props.headerHeight!
+        containerHeight: e.nativeEvent.layout.height - this.props.headerHeight!,
       });
     } catch (error) {
-      console.error('捕获错误', error);
+      console.error("捕获错误", error);
     }
   };
 
@@ -168,7 +180,7 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
    */
   onSelect = (index: number) => {
     if (this.list) {
-      this.list.scrollToIndex({index, animated: true});
+      this.list.scrollToIndex({ index, animated: true });
     }
     this.touchedTime = new Date().getTime();
   };
@@ -177,10 +189,13 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
    * 可视范围内元素变化时改变所选字母
    * @param info
    */
-  onViewableItemsChanged = (info: { viewableItems: Array<ViewToken>; changed: Array<ViewToken> }) => {
+  onViewableItemsChanged = (info: {
+    viewableItems: Array<ViewToken>;
+    changed: Array<ViewToken>;
+  }) => {
     if (info.viewableItems.length) {
       // 点击字母触发的滚动3秒内不响应
-      if ((new Date().getTime() - this.touchedTime) < 500) {
+      if (new Date().getTime() - this.touchedTime < 500) {
         return;
       }
       if (this.alphabetList) {
@@ -192,29 +207,33 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
   getItemLayout = (data: any, index: number) => ({
     length: this.state.itemLayout[index].length,
     offset: this.state.itemLayout[index].offset,
-    index
+    index,
   });
 
   renderItem = (info: ListRenderItemInfo<string>) => {
     return (
       <View key={info.index}>
-        {this.props.renderSectionHeader && this.props.renderSectionHeader({title: info.item})}
-        {this.props.data[info.item].map((itemValue, itemIndex, items) => this.props.renderItem({
-          item: itemValue,
-          index: itemIndex,
-          last: itemIndex === items.length - 1
-        }))}
+        {this.props.renderSectionHeader &&
+          this.props.renderSectionHeader({ title: info.item })}
+        {this.props.data[info.item].map((itemValue, itemIndex, items) =>
+          this.props.renderItem({
+            item: itemValue,
+            index: itemIndex,
+            last: itemIndex === items.length - 1,
+          })
+        )}
       </View>
     );
   };
 
   render() {
     return (
-      <View style={styles.container}
-            ref={(ref) => {
-              this.container = ref as View;
-            }}
-            onLayout={this.onLayout}
+      <View
+        style={styles.container}
+        ref={(ref) => {
+          this.container = ref as View;
+        }}
+        onLayout={this.onLayout}
       >
         <FlatList<any>
           ref={(ref) => {
@@ -240,6 +259,6 @@ export default class AlphabetFlatList<ItemT> extends Component<IProps<ItemT>, IS
           alphabetToast={this.props.alphabetToast}
         />
       </View>
-    )
+    );
   }
 }
